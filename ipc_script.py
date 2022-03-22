@@ -4,35 +4,40 @@ import pickle
 import random
 import time
 
-def ipc_scr(test_indices, train_indices):
+def ipc_scr(test_indices, train_indices, indices_dict):
     d_iter = pd.read_csv("../patent_databases/ipcr.tsv", sep="\t",
                     usecols=["patent_id", "section"],
                     chunksize=250000, low_memory=False)
 
-    ipc_nda = np.zeros(shape=(250000, 8), dtype=int)
 
-    i = 0
+    ipc_nda = np.zeros(shape=(len(indices_dict.keys()), 8), dtype=int)
+    print("Creating label matrix...")
+    i = -1
     for chunk in d_iter:
-        hfsize = int(len(chunk.index)/4)
-        chunk = chunk.loc[:hfsize].copy(deep=True)
         for row in chunk["section"]:
-            if (row == "A"):
-                ipc_nda[i][0] = 1
-            elif (row == "B"):
-                ipc_nda[i][1] = 1
-            elif (row == "C"):
-                ipc_nda[i][2] = 1
-            elif (row == "D"):
-                ipc_nda[i][3] = 1
-            elif (row == "E"):
-                ipc_nda[i][4] = 1
-            elif (row == "F"):
-                ipc_nda[i][5] = 1
-            elif (row == "G"):
-                ipc_nda[i][6] = 1
-            elif (row == "H"):
-                ipc_nda[i][7] = 1
             i = i + 1
+            tmp_index = chunk["patent_id"][i]
+            if tmp_index in indices_dict.keys():
+                if (row == "A"):
+                    ipc_nda[indices_dict[tmp_index]][0] = 1
+                elif (row == "B"):
+                    ipc_nda[indices_dict[tmp_index]][1] = 1
+                elif (row == "C"):
+                    ipc_nda[indices_dict[tmp_index]][2] = 1
+                elif (row == "D"):
+                    ipc_nda[indices_dict[tmp_index]][3] = 1
+                elif (row == "E"):
+                    ipc_nda[indices_dict[tmp_index]][4] = 1
+                elif (row == "F"):
+                    ipc_nda[indices_dict[tmp_index]][5] = 1
+                elif (row == "G"):
+                    ipc_nda[indices_dict[tmp_index]][6] = 1
+                elif (row == "H"):
+                    ipc_nda[indices_dict[tmp_index]][7] = 1
+
+        print("check_i", i)
+
+
 
     print(len(ipc_nda))
     print(type(ipc_nda))
@@ -54,4 +59,5 @@ def ipc_scr(test_indices, train_indices):
     pickle.dump(test, ty_pickled)
     ty_pickled.close()
 
+# IndexError: index 11049786 is out of bounds for axis 0 with size 11049786
 
