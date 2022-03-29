@@ -11,4 +11,5 @@ for f in filelist:
     if not os.path.exists(f):
         exit()
 
-rfd = data_refactorizer(filelist)
+data_refactorizer(filelist)
+
